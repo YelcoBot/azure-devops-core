@@ -9,6 +9,13 @@ jobs:
   - job: build_test
     displayName: '✅ Build and Test'
     steps:
+      - checkout: self
+        displayName: '📂 Checkout Source Repository'
+        clean: true
+        fetchDepth: 1
+        fetchTags: false
+        persistCredentials: false
+
       - template: ../steps/${{ parameters.language }}/build.yml
 
       - template: ../steps/${{ parameters.language }}/test.yml

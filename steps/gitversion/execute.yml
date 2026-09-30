@@ -1,0 +1,54 @@
+parameters:
+  - name: gitVersionRelativePath
+    type: string
+    default: '/GitVersion.yml'
+
+steps:
+  - task: gitversion-setup@4
+    displayName: '⚙️ Set Up GitVersion'
+    inputs:
+      versionSpec: '$(gitVersionVersionSpec)'
+
+  - task: gitversion-execute@4
+    displayName: '🏷️ Generate Version'
+    name: GitVersionInfo
+    inputs:
+      useConfigFile: true
+      configFilePath: '$(Build.SourcesDirectory)${{ parameters.gitVersionRelativePath }}'
+      disableShallowCloneCheck: true
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: PowerShell@2
+    displayName: '📋 GitVersion Named Outputs'
+    inputs:
+      targetType: inline
+      pwsh: true
+      script: |
+        Write-Host "🏷️ AssemblySemFileVer=$(GitVersionInfo.AssemblySemFileVer)"
+        Write-Host "🏷️ AssemblySemVer=$(GitVersionInfo.AssemblySemVer)"
+        Write-Host "🏷️ BranchName=$(GitVersionInfo.BranchName)"
+        Write-Host "🏷️ BuildMetaData=$(GitVersionInfo.BuildMetaData)"
+        Write-Host "🏷️ CommitDate=$(GitVersionInfo.CommitDate)"
+        Write-Host "🏷️ CommitsSinceVersionSource=$(GitVersionInfo.CommitsSinceVersionSource)"
+        Write-Host "🏷️ EscapedBranchName=$(GitVersionInfo.EscapedBranchName)"
+        Write-Host "🏷️ FullBuildMetaData=$(GitVersionInfo.FullBuildMetaData)"
+        Write-Host "🏷️ FullSemVer=$(GitVersionInfo.FullSemVer)"
+        Write-Host "🏷️ InformationalVersion=$(GitVersionInfo.InformationalVersion)"
+        Write-Host "🏷️ Major=$(GitVersionInfo.Major)"
+        Write-Host "🏷️ MajorMinorPatch=$(GitVersionInfo.MajorMinorPatch)"
+        Write-Host "🏷️ Minor=$(GitVersionInfo.Minor)"
+        Write-Host "🏷️ Patch=$(GitVersionInfo.Patch)"
+        Write-Host "🏷️ PreReleaseLabel=$(GitVersionInfo.PreReleaseLabel)"
+        Write-Host "🏷️ PreReleaseLabelWithDash=$(GitVersionInfo.PreReleaseLabelWithDash)"
+        Write-Host "🏷️ PreReleaseNumber=$(GitVersionInfo.PreReleaseNumber)"
+        Write-Host "🏷️ PreReleaseTag=$(GitVersionInfo.PreReleaseTag)"
+        Write-Host "🏷️ PreReleaseTagWithDash=$(GitVersionInfo.PreReleaseTagWithDash)"
+        Write-Host "🏷️ SemVer=$(GitVersionInfo.SemVer)"
+        Write-Host "🏷️ Sha=$(GitVersionInfo.Sha)"
+        Write-Host "🏷️ ShortSha=$(GitVersionInfo.ShortSha)"
+        Write-Host "🏷️ UncommittedChanges=$(GitVersionInfo.UncommittedChanges)"
+        Write-Host "🏷️ VersionSourceDistance=$(GitVersionInfo.VersionSourceDistance)"
+        Write-Host "🏷️ VersionSourceIncrement=$(GitVersionInfo.VersionSourceIncrement)"
+        Write-Host "🏷️ VersionSourceSemVer=$(GitVersionInfo.VersionSourceSemVer)"
+        Write-Host "🏷️ VersionSourceSha=$(GitVersionInfo.VersionSourceSha)"
+        Write-Host "🏷️ WeightedPreReleaseNumber=$(GitVersionInfo.WeightedPreReleaseNumber)"

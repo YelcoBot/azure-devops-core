@@ -1,0 +1,29 @@
+parameters:
+  - name: projects
+    type: object
+    default: []
+
+steps:
+  - ${{ each project in parameters.projects }}:
+    - ${{ if eq(project.type, 'VSIX') }}:
+      - task: PowerShell@2
+        displayName: '🏷️ Set VSIX Version - ${{ project.name }}'
+        inputs:
+          targetType: inline
+          pwsh: true
+          script: |
+            $ErrorActionPreference = 'Stop'
+
+            $projectName = Split-Path '${{ project.projectPattern }}' -Leaf
+            $projectFile = Get-ChildItem '$(Build.SourcesDirectory)' -Recurse -Filter $projectName | Select-Object -First 1
+            if (-not $projectFile) { throw "No se encontró $projectName" }
+
+            $manifestPath = Join-Path $projectFile.DirectoryName 'source.extension.vsixmanifest'
+            $newVersion   = '$(GitVersionInfo.MajorMinorPatch)'
+
+            [xml]$manifest = Get-Content $manifestPath -Raw
+            $identity = $manifest.PackageManifest.Metadata.Identity
+
+            Write-Host "🏷️ VSIX version: $($identity.Version) -> $newVersion"
+            $identity.SetAttribute('Version', $newVersion)
+            $manifest.Save($manifestPath)

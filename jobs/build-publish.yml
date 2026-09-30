@@ -17,6 +17,24 @@ jobs:
   - job: build_publish
     displayName: '⚙️ Build and Publish'
     steps:
+      - checkout: self
+        displayName: '📂 Checkout Source Repository'
+        clean: true
+        ${{ if containsValue(parameters.projects.*.type, 'VSIX') }}:
+          fetchDepth: 0
+          fetchTags: true
+        ${{ else }}:
+          fetchDepth: 1
+          fetchTags: false
+        persistCredentials: false
+
+      - ${{ if containsValue(parameters.projects.*.type, 'VSIX') }}:
+        - template: ../steps/gitversion/execute.yml
+
+        - template: ../steps/visual-studio-marketplace/version.yml
+          parameters:
+            projects: ${{ parameters.projects }}
+
       - template: ../steps/${{ parameters.language }}/build.yml
 
       - template: ../steps/${{ parameters.language }}/publish.yml

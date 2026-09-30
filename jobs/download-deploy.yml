@@ -14,11 +14,23 @@ jobs:
   - job: download_deploy
     displayName: '🚀 Download and Deploy'
     steps:
-      - checkout: none
+      - ${{ if eq(parameters.service, 'nuget') }}:
+        - checkout: self
+          displayName: '📂 Checkout Source Repository'
+          clean: true
+          fetchDepth: 0
+          fetchTags: true
+          persistCredentials: true
+
+      - ${{ else }}:
+        - checkout: none
 
       - template: ../steps/artifact/download.yml
         parameters:
           artifacts: ${{ parameters.artifacts }}
+
+      - ${{ if eq(parameters.service, 'nuget') }}:
+        - template: ../steps/gitversion/execute.yml
 
       - template: ../steps/${{ parameters.service }}/deploy.yml
         parameters:
