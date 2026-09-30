@@ -11,5 +11,5 @@ steps:
         inputs:
           connectTo: 'VsTeam'
           connectedServiceName: 'visual-studio-marketplace'
-          vsixFile: '$(Pipeline.Workspace)/${{ project.outputPath }}/*.vsix'
+          vsixFile: '$(Pipeline.Workspace)/${{ project.outputPath }}/${{ project.vsixFile }}'
           manifestFile: '$(Pipeline.Workspace)/${{ project.outputPath }}/publishManifest.json'
