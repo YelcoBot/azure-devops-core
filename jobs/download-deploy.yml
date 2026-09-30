@@ -11,19 +11,15 @@ parameters:
     default: []
 
 jobs:
-  - deployment: download_deploy
+  - job: download_deploy
     displayName: '🚀 Download and Deploy'
-    environment: ${{ parameters.service }}
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-            - download: none
+    steps:
+      - checkout: none
 
-            - template: ../steps/artifact/download.yml
-              parameters:
-                artifacts: ${{ parameters.artifacts }}
+      - template: ../steps/artifact/download.yml
+        parameters:
+          artifacts: ${{ parameters.artifacts }}
 
-            - template: ../steps/${{ parameters.service }}/deploy.yml
-              parameters:
-                projects: ${{ parameters.projects }}
+      - template: ../steps/${{ parameters.service }}/deploy.yml
+        parameters:
+          projects: ${{ parameters.projects }}
