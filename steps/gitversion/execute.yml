@@ -22,7 +22,7 @@ steps:
     displayName: '📋 GitVersion Named Outputs'
     inputs:
       targetType: inline
-      pwsh: true
+      pwsh: false
       script: |
         Write-Host "🏷️ AssemblySemFileVer=$(GitVersionInfo.AssemblySemFileVer)"
         Write-Host "🏷️ AssemblySemVer=$(GitVersionInfo.AssemblySemVer)"

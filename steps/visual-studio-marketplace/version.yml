@@ -10,7 +10,7 @@ steps:
         displayName: '🏷️ Set VSIX Version - ${{ project.name }}'
         inputs:
           targetType: inline
-          pwsh: true
+          pwsh: false
           script: |
             $ErrorActionPreference = 'Stop'
 
