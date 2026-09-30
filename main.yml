@@ -38,3 +38,12 @@ parameters:
     displayName: 'Artifacts to upload'
     type: object
     default: []
+
+stages:
+  - template: services/${{ parameters.service }}/main.yml
+    parameters:
+      language: ${{ parameters.language }}
+      command: ${{ parameters.command }}
+      ${{ if ne(parameters.service, 'code-analysis') }}:
+        projects: ${{ parameters.projects }}
+        artifacts: ${{ parameters.artifacts }}
