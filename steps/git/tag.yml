@@ -1,0 +1,28 @@
+parameters:
+  - name: tagName
+    type: string
+    default: 'v$(GitVersionInfo.MajorMinorPatch)'
+
+steps:
+  - task: PowerShell@2
+    displayName: '🏷️ Create Git Tag - ${{ parameters.tagName }}'
+    inputs:
+      targetType: inline
+      pwsh: false
+      workingDirectory: '$(Build.SourcesDirectory)'
+      script: |
+        $ErrorActionPreference = 'Stop'
+        $tag = '${{ parameters.tagName }}'
+
+        if (git tag --list $tag) {
+          Write-Host "🏷️ Tag $tag already exists, skipping."
+          return
+        }
+
+        git -c user.name="$(Build.RequestedFor)" -c user.email="$(Build.RequestedForEmail)" tag -a $tag -m "Release $tag"
+        if ($LASTEXITCODE -ne 0) { throw "git tag falló." }
+
+        git push origin $tag
+        if ($LASTEXITCODE -ne 0) { throw "git push falló." }
+
+        Write-Host "🏷️ Tag $tag created and pushed."

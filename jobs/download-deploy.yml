@@ -14,7 +14,7 @@ jobs:
   - job: download_deploy
     displayName: '🚀 Download and Deploy'
     steps:
-      - ${{ if eq(parameters.service, 'nuget') }}:
+      - ${{ if in(parameters.service, 'visual-studio-marketplace', 'nuget') }}:
         - checkout: self
           displayName: '📂 Checkout Source Repository'
           clean: true
@@ -29,9 +29,12 @@ jobs:
         parameters:
           artifacts: ${{ parameters.artifacts }}
 
-      - ${{ if eq(parameters.service, 'nuget') }}:
+      - ${{ if in(parameters.service, 'visual-studio-marketplace', 'nuget') }}:
         - template: ../steps/gitversion/execute.yml
 
       - template: ../steps/${{ parameters.service }}/deploy.yml
         parameters:
           projects: ${{ parameters.projects }}
+
+      - ${{ if in(parameters.service, 'visual-studio-marketplace', 'nuget') }}:
+        - template: ../steps/git/tag.yml
