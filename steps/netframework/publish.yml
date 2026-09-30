@@ -37,9 +37,11 @@ steps:
         displayName: '📦 Copy VSIX - ${{ project.name }}'
         inputs:
           SourceFolder: '$(Agent.TempDirectory)/TempBuild/${{ project.name }}'
-          Contents: '**/*.vsix'
+          Contents: |
+            *.vsix
+            publishManifest.json
+            overview.md
           TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}'
-          flattenFolders: true
 
     - ${{ if in(project.type, 'APP', 'CLI') }}:
       - task: MSBuild@1
