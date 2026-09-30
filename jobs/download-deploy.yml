@@ -1,0 +1,29 @@
+parameters:
+  - name: service
+    type: string
+
+  - name: projects
+    type: object
+    default: []
+
+  - name: artifacts
+    type: object
+    default: []
+
+jobs:
+  - deployment: download_deploy
+    displayName: '🚀 Download and Deploy'
+    environment: ${{ parameters.service }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - download: none
+
+            - template: ../steps/artifact/download.yml
+              parameters:
+                artifacts: ${{ parameters.artifacts }}
+
+            - template: ../steps/${{ parameters.service }}/deploy.yml
+              parameters:
+                projects: ${{ parameters.projects }}

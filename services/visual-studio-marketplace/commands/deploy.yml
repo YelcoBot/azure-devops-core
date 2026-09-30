@@ -22,3 +22,13 @@ stages:
           language: ${{ parameters.language }}
           projects: ${{ parameters.projects }}
           artifacts: ${{ parameters.artifacts }}
+
+  - stage: deploy
+    displayName: '🚀 Deploy'
+    dependsOn: build_publish
+    jobs:
+      - template: ../../../jobs/download-deploy.yml
+        parameters:
+          service: visual-studio-marketplace
+          projects: ${{ parameters.projects }}
+          artifacts: ${{ parameters.artifacts }}
