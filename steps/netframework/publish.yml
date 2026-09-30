@@ -20,7 +20,28 @@ steps:
             /p:WebProjectOutputDir="$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}"
             /p:OverwriteReadOnlyFiles=true
 
-    - ${{ if in(project.type, 'APP', 'CLI', 'VSIX') }}:
+    - ${{ if eq(project.type, 'VSIX') }}:
+      - task: MSBuild@1
+        displayName: '🧩 Build VSIX - ${{ project.name }}'
+        inputs:
+          solution: '${{ project.projectPattern }}'
+          msbuildArchitecture: 'x64'
+          configuration: '$(buildConfiguration)'
+          platform: '$(buildPlatform)'
+          msbuildArguments: >
+            /t:Build
+            /p:OutDir="$(Agent.TempDirectory)/TempBuild/${{ project.name }}/"
+            /p:OverwriteReadOnlyFiles=true
+
+      - task: CopyFiles@2
+        displayName: '📦 Copy VSIX - ${{ project.name }}'
+        inputs:
+          SourceFolder: '$(Agent.TempDirectory)/TempBuild/${{ project.name }}'
+          Contents: '**/*.vsix'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}'
+          flattenFolders: true
+
+    - ${{ if in(project.type, 'APP', 'CLI') }}:
       - task: MSBuild@1
         displayName: '📦 Build ${{ project.type }} - ${{ project.name }}'
         inputs:
