@@ -1,0 +1,40 @@
+# DevOps Core Main Orchestrator
+# Routes each service to its main template based on the service parameter.
+# | service                   | language               | command             |
+# |---------------------------|------------------------|---------------------|
+# | iis                       | dotnet, netframework   | deploy, configure   |
+# | nuget                     | dotnet, netframework   | deploy              |
+# | visual-studio-marketplace | dotnet, netframework   | deploy              |
+# | code-analysis             | dotnet, netframework   | test                |
+
+parameters:
+  - name: service
+    displayName: 'Target service'
+    type: string
+    values:
+      - iis
+      - nuget
+      - visual-studio-marketplace
+      - code-analysis
+
+  - name: language
+    displayName: 'Language implementation'
+    type: string
+    values:
+      - dotnet
+      - netframework
+
+  - name: command
+    displayName: 'Command to execute'
+    type: string
+    default: ''
+
+  - name: projects
+    displayName: 'Projects to publish'
+    type: object
+    default: []
+
+  - name: artifacts
+    displayName: 'Artifacts to upload'
+    type: object
+    default: []

@@ -1,0 +1,22 @@
+parameters:
+  - name: projects
+    type: object
+    default: []
+
+steps:
+  - ${{ each project in parameters.projects }}:
+    - task: DotNetCoreCLI@2
+      displayName: '🚀 Publish Project - ${{ project.name }}'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '${{ project.projectPattern }}'
+        arguments: >
+          --configuration $(buildConfiguration)
+          -o "$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}"
+          /p:PublishReadyToRun=${{ project.publishReadyToRun }}
+          /p:PublishSingleFile=${{ project.publishSingleFile }}
+          /p:SelfContained=${{ project.publishSelfContained }}
+          /p:RuntimeIdentifier=${{ project.publishPlatform }}
+        zipAfterPublish: false
+        modifyOutputPath: false

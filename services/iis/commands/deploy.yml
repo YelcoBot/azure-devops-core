@@ -1,0 +1,24 @@
+parameters:
+  - name: language
+    type: string
+    values:
+      - dotnet
+      - netframework
+
+  - name: projects
+    type: object
+    default: []
+
+  - name: artifacts
+    type: object
+    default: []
+
+stages:
+  - stage: build_publish
+    displayName: '🛠️ Build and Publish'
+    jobs:
+      - template: ../../../jobs/build-publish.yml
+        parameters:
+          language: ${{ parameters.language }}
+          projects: ${{ parameters.projects }}
+          artifacts: ${{ parameters.artifacts }}

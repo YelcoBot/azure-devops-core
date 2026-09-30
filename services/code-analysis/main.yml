@@ -1,0 +1,16 @@
+parameters:
+  - name: language
+    type: string
+    values:
+      - dotnet
+      - netframework
+
+  - name: command
+    type: string
+    values:
+      - test
+
+stages:
+  - template: commands/${{ parameters.command }}.yml
+    parameters:
+      language: ${{ parameters.language }}

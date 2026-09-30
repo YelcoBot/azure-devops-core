@@ -1,0 +1,14 @@
+parameters:
+  - name: language
+    type: string
+    values:
+      - dotnet
+      - netframework
+
+jobs:
+  - job: build_test
+    displayName: '✅ Build and Test'
+    steps:
+      - template: ../steps/${{ parameters.language }}/build.yml
+
+      - template: ../steps/${{ parameters.language }}/test.yml

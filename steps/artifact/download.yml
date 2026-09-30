@@ -1,0 +1,21 @@
+parameters:
+  - name: artifacts
+    type: object
+    default: []
+
+steps:
+  - ${{ each artifact in parameters.artifacts }}:
+    - task: DownloadPipelineArtifact@2
+      displayName: '⬇️ Download artifact - ${{ artifact.name }}'
+      inputs:
+        buildType: 'current'
+        artifactName: '${{ artifact.name }}'
+        targetPath: '$(Agent.TempDirectory)/${{ artifact.name }}'
+
+    - task: ExtractFiles@1
+      displayName: '📂 Unzip artifact - ${{ artifact.name }}'
+      inputs:
+        archiveFilePatterns: '$(Agent.TempDirectory)/${{ artifact.name }}/${{ artifact.name }}.zip'
+        destinationFolder: '$(Pipeline.Workspace)/${{ artifact.path }}'
+        cleanDestinationFolder: false
+        overwriteExistingFiles: true

@@ -1,0 +1,11 @@
+steps:
+  - task: VSTest@2
+    displayName: '🧪 Run tests'
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\*Test*.dll
+        !**\*TestAdapter.dll
+        !**\obj\**
+      configuration: '$(buildConfiguration)'
+      platform: '$(buildPlatform)'

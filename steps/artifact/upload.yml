@@ -1,0 +1,21 @@
+parameters:
+  - name: artifacts
+    type: object
+    default: []
+
+steps:
+  - ${{ each artifact in parameters.artifacts }}:
+    - task: ArchiveFiles@2
+      displayName: '📁 Zip artifact - ${{ artifact.name }}'
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/${{ artifact.path }}'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Agent.TempDirectory)/${{ artifact.name }}.zip'
+        replaceExistingArchive: true
+
+    - task: PublishPipelineArtifact@1
+      displayName: '⬆️ Upload artifact - ${{ artifact.name }}'
+      inputs:
+        targetPath: '$(Agent.TempDirectory)/${{ artifact.name }}.zip'
+        artifact: '${{ artifact.name }}'

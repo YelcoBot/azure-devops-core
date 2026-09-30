@@ -1,0 +1,44 @@
+parameters:
+  - name: projects
+    type: object
+    default: []
+
+steps:
+  - ${{ each project in parameters.projects }}:
+    - ${{ if eq(project.type, 'WEB') }}:
+      - task: MSBuild@1
+        displayName: '📤 Publish Web - ${{ project.name }}'
+        inputs:
+          solution: '${{ project.projectPattern }}'
+          msbuildArchitecture: 'x64'
+          configuration: '$(buildConfiguration)'
+          platform: '$(buildPlatform)'
+          msbuildArguments: >
+            /t:Build;_CopyWebApplication
+            /p:OutDir="$(Agent.TempDirectory)/TempBuild"
+            /p:OutputPath="$(Agent.TempDirectory)/TempBuild"
+            /p:WebProjectOutputDir="$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}"
+            /p:OverwriteReadOnlyFiles=true
+
+    - ${{ if in(project.type, 'APP', 'CLI', 'VSIX') }}:
+      - task: MSBuild@1
+        displayName: '📦 Build ${{ project.type }} - ${{ project.name }}'
+        inputs:
+          solution: '${{ project.projectPattern }}'
+          msbuildArchitecture: 'x64'
+          configuration: '$(buildConfiguration)'
+          platform: '$(buildPlatform)'
+          msbuildArguments: >
+            /t:Build
+            /p:OutDir="$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}"
+            /p:OutputPath="$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}"
+            /p:OverwriteReadOnlyFiles=true
+
+    - ${{ if eq(project.type, 'NUGET') }}:
+      - task: NuGetCommand@2
+        displayName: '🎁 Pack NuGet - ${{ project.name }}'
+        inputs:
+          command: 'pack'
+          packagesToPack: '${{ project.projectPattern }}'
+          configuration: '$(buildConfiguration)'
+          packDestination: '$(Build.ArtifactStagingDirectory)/${{ project.outputPath }}'
