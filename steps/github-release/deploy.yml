@@ -22,7 +22,7 @@ steps:
   - task: GitHubRelease@1
     displayName: '🚀 Create GitHub Release - ${{ parameters.tagName }}'
     inputs:
-      gitHubConnection: 'github-release'
+      gitHubConnection: '$(gitHubConnection)'
       repositoryName: '$(Build.Repository.Name)'
       action: 'create'
       target: '$(Build.SourceVersion)'

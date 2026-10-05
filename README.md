@@ -161,7 +161,7 @@ For the `visual-studio-marketplace` service:
 
 For the `github-release` service (use it for extensions the Marketplace does not accept, such as SSMS):
 
-- A GitHub service connection named `github-release` with permission to create releases.
+- A GitHub service connection (OAuth or PAT, not the Azure Pipelines app) with permission to create releases, and its name in the `gitHubConnection` variable. Define the variable in the pipeline YAML, not in a variable group: service connections are resolved at compile time.
 - The consumer repository hosted on GitHub (`$(Build.Repository.Name)` is used as the target repository).
 - A `GitVersion.yml` file at the root of the consumer repository.
 - The release and its tag are both named `v<MajorMinorPatch>`; the task creates the tag on the built commit.
