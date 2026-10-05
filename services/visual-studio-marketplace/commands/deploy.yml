@@ -1,4 +1,10 @@
 parameters:
+  - name: service
+    type: string
+
+  - name: command
+    type: string
+
   - name: language
     type: string
     values:
@@ -13,8 +19,14 @@ parameters:
     type: object
     default: []
 
+  - name: dependsOn
+    type: object
+    default: []
+
 stages:
-  - stage: build_publish
+  - stage: ${{ replace(parameters.service, '-', '_') }}_${{ parameters.command }}_build_publish
+    ${{ if ne(length(parameters.dependsOn), 0) }}:
+      dependsOn: ${{ parameters.dependsOn }}
     displayName: '🛠️ Build and Publish'
     jobs:
       - template: ../../../jobs/build-publish.yml
@@ -23,12 +35,12 @@ stages:
           projects: ${{ parameters.projects }}
           artifacts: ${{ parameters.artifacts }}
 
-  - stage: deploy
+  - stage: ${{ replace(parameters.service, '-', '_') }}_${{ parameters.command }}_deploy
     displayName: '🚀 Deploy'
-    dependsOn: build_publish
+    dependsOn: ${{ replace(parameters.service, '-', '_') }}_${{ parameters.command }}_build_publish
     jobs:
       - template: ../../../jobs/download-deploy.yml
         parameters:
-          service: visual-studio-marketplace
+          service: ${{ parameters.service }}
           projects: ${{ parameters.projects }}
           artifacts: ${{ parameters.artifacts }}

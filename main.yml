@@ -41,11 +41,18 @@ parameters:
     type: object
     default: []
 
+  - name: dependsOn
+    displayName: 'Stages the first stage depends on'
+    type: object
+    default: []
+
 stages:
   - template: services/${{ parameters.service }}/main.yml
     parameters:
+      service: ${{ parameters.service }}
       language: ${{ parameters.language }}
       command: ${{ parameters.command }}
+      dependsOn: ${{ parameters.dependsOn }}
       ${{ if ne(parameters.service, 'code-analysis') }}:
         projects: ${{ parameters.projects }}
         artifacts: ${{ parameters.artifacts }}

@@ -99,6 +99,10 @@ stages:
 | `projects`  | object | No       | Projects to publish. Not passed to `code-analysis`                           |
 | `artifacts` | object | No       | Pipeline artifacts to upload and download. Not passed to `code-analysis`     |
 
+| `dependsOn` | object | No       | Stage name or list of stage names the first stage of the service depends on  |
+
+Stages are named `<service>_<command>_<stage>` with hyphens replaced by underscores, for example `github_release_deploy_build_publish` and `github_release_deploy_deploy`. This lets one pipeline call `main.yml` several times and chain the calls with `dependsOn`.
+
 ### `projects` items
 
 | Field                   | Used by                              | Description                                                        |

@@ -1,14 +1,26 @@
 parameters:
+  - name: service
+    type: string
+
+  - name: command
+    type: string
+
   - name: language
     type: string
     values:
       - dotnet
       - netframework
 
+  - name: dependsOn
+    type: object
+    default: []
+
 stages:
-  - stage: build_test
+  - stage: ${{ replace(parameters.service, '-', '_') }}_${{ parameters.command }}_build_test
+    ${{ if ne(length(parameters.dependsOn), 0) }}:
+      dependsOn: ${{ parameters.dependsOn }}
     displayName: '🧪 Build and Test'
     jobs:
       - template: ../../../jobs/build-test.yml
         parameters:
-          language: ${{ parameters.language }
+          language: ${{ parameters.language }}

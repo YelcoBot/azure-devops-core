@@ -1,4 +1,7 @@
 parameters:
+  - name: service
+    type: string
+
   - name: language
     type: string
     values:
@@ -10,7 +13,14 @@ parameters:
     values:
       - test
 
+  - name: dependsOn
+    type: object
+    default: []
+
 stages:
   - template: commands/${{ parameters.command }}.yml
     parameters:
+      service: ${{ parameters.service }}
       language: ${{ parameters.language }}
+      command: ${{ parameters.command }}
+      dependsOn: ${{ parameters.dependsOn }}
