@@ -15,7 +15,7 @@ parameters:
 
   - name: dependsOn
     type: object
-    default: []
+    default: ''
 
 stages:
   - template: commands/${{ parameters.command }}.yml

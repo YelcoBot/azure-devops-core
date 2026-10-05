@@ -44,7 +44,7 @@ parameters:
   - name: dependsOn
     displayName: 'Stages the first stage depends on'
     type: object
-    default: []
+    default: ''
 
 stages:
   - template: services/${{ parameters.service }}/main.yml

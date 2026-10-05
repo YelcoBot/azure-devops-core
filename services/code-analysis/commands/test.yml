@@ -13,11 +13,11 @@ parameters:
 
   - name: dependsOn
     type: object
-    default: []
+    default: ''
 
 stages:
   - stage: ${{ replace(parameters.service, '-', '_') }}_${{ parameters.command }}_build_test
-    ${{ if ne(length(parameters.dependsOn), 0) }}:
+    ${{ if ne(parameters.dependsOn, '') }}:
       dependsOn: ${{ parameters.dependsOn }}
     displayName: '🧪 Build and Test'
     jobs:
