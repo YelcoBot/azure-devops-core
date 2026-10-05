@@ -5,6 +5,7 @@
 # | iis                       | dotnet, netframework   | deploy, configure   |
 # | nuget                     | dotnet, netframework   | deploy              |
 # | visual-studio-marketplace | dotnet, netframework   | deploy              |
+# | github-release            | dotnet, netframework   | deploy              |
 # | code-analysis             | dotnet, netframework   | test                |
 
 parameters:
@@ -15,6 +16,7 @@ parameters:
       - iis
       - nuget
       - visual-studio-marketplace
+      - github-release
       - code-analysis
 
   - name: language

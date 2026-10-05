@@ -1,0 +1,26 @@
+parameters:
+  - name: language
+    type: string
+    values:
+      - dotnet
+      - netframework
+
+  - name: command
+    type: string
+    values:
+      - deploy
+
+  - name: projects
+    type: object
+    default: []
+
+  - name: artifacts
+    type: object
+    default: []
+
+stages:
+  - template: commands/${{ parameters.command }}.yml
+    parameters:
+      language: ${{ parameters.language }}
+      projects: ${{ parameters.projects }}
+      artifacts: ${{ parameters.artifacts }}
