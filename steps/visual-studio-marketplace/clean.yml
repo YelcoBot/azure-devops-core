@@ -1,0 +1,68 @@
+parameters:
+  - name: projects
+    type: object
+    default: []
+
+  # InstallationTarget ids accepted by VsixPublisher (Visual Studio Marketplace).
+  - name: installationTargets
+    type: object
+    default:
+      - Microsoft.VisualStudio.Community
+      - Microsoft.VisualStudio.CommunityX86
+      - Microsoft.VisualStudio.Pro
+      - Microsoft.VisualStudio.Professional
+      - Microsoft.VisualStudio.ProfessionalX86
+      - Microsoft.VisualStudio.Enterprise
+      - Microsoft.VisualStudio.EnterpriseX86
+      - Microsoft.VisualStudio.Premium
+      - Microsoft.VisualStudio.Ultimate
+      - Microsoft.VisualStudio.IntegratedShell
+      - Microsoft.VisualStudio.Test
+      - Microsoft.VisualStudio.TestProfessional
+      - Microsoft.VisualStudio.VSLS
+      - Microsoft.VisualStudio.Express_All
+      - Microsoft.VisualStudio.VBExpress
+      - Microsoft.VisualStudio.VCExpress
+      - Microsoft.VisualStudio.VCSExpress
+      - Microsoft.VisualStudio.VPDExpress
+      - Microsoft.VisualStudio.VSWinExpress
+      - Microsoft.VisualStudio.VSWinDesktopExpress
+      - Microsoft.VisualStudio.VWDExpress
+      - Microsoft.VisualStudio.WebExpress
+
+steps:
+  - ${{ each project in parameters.projects }}:
+    - ${{ if eq(project.type, 'VSIX') }}:
+      - task: PowerShell@2
+        displayName: '🧹 Clean VSIX Installation Targets - ${{ project.name }}'
+        inputs:
+          targetType: inline
+          pwsh: false
+          script: |
+            $ErrorActionPreference = 'Stop'
+
+            $projectName = Split-Path '${{ project.projectPattern }}' -Leaf
+            $projectFile = Get-ChildItem '$(Build.SourcesDirectory)' -Recurse -Filter $projectName | Select-Object -First 1
+            if (-not $projectFile) { throw "No se encontró $projectName" }
+
+            $manifestPath = Join-Path $projectFile.DirectoryName 'source.extension.vsixmanifest'
+            $allowed      = '${{ join(';', parameters.installationTargets) }}' -split ';'
+
+            [xml]$manifest = Get-Content $manifestPath -Raw
+            $targets = @($manifest.PackageManifest.Installation.InstallationTarget)
+
+            foreach ($target in $targets) {
+              if ($allowed -contains $target.Id) {
+                Write-Host "✅ Keep $($target.Id) $($target.Version)"
+              }
+              else {
+                Write-Host "🧹 Remove $($target.Id) $($target.Version)"
+                [void]$target.ParentNode.RemoveChild($target)
+              }
+            }
+
+            if (-not @($manifest.PackageManifest.Installation.InstallationTarget)) {
+              throw "No queda ningún InstallationTarget válido para el Marketplace."
+            }
+
+            $manifest.Save($manifestPath)

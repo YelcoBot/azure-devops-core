@@ -1,4 +1,7 @@
 parameters:
+  - name: service
+    type: string
+
   - name: language
     type: string
     values:
@@ -32,6 +35,11 @@ jobs:
         - template: ../steps/gitversion/execute.yml
 
         - template: ../steps/visual-studio-marketplace/version.yml
+          parameters:
+            projects: ${{ parameters.projects }}
+
+      - ${{ if eq(parameters.service, 'visual-studio-marketplace') }}:
+        - template: ../steps/visual-studio-marketplace/clean.yml
           parameters:
             projects: ${{ parameters.projects }}
 

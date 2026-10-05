@@ -31,7 +31,7 @@ steps/                           Reusable steps
   artifact/                      upload (zip + publish), download (download + unzip)
   gitversion/execute.yml         Sets up and runs GitVersion (output name: GitVersionInfo)
   git/tag.yml                    Creates and pushes the v<MajorMinorPatch> tag
-  visual-studio-marketplace/     version (stamps the vsixmanifest), deploy (publishes the VSIX)
+  visual-studio-marketplace/     version (stamps the vsixmanifest), clean (drops unsupported targets), deploy (publishes the VSIX)
   github-release/deploy.yml      Creates the GitHub Release with the published files as assets
 ```
 
@@ -156,6 +156,7 @@ For the `visual-studio-marketplace` service:
 - A service connection named `visual-studio-marketplace`.
 - A `GitVersion.yml` file at the root of the consumer repository.
 - A `source.extension.vsixmanifest` next to the VSIX project file; its version is overwritten with `MajorMinorPatch`.
+- Before building, every `InstallationTarget` the Marketplace does not accept (for example `Microsoft.VisualStudio.Ssms`) is removed from the manifest; the accepted ids are listed in [steps/visual-studio-marketplace/clean.yml](steps/visual-studio-marketplace/clean.yml).
 - `publishManifest.json` and `overview.md` copied to the build output of the VSIX project.
 - Permission for the pipeline identity to push tags: after a successful deploy the tag `v<MajorMinorPatch>` is created and pushed (skipped if it already exists).
 
